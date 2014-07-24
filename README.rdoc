@@ -1,0 +1,41 @@
+== README
+
+Welcome to DoctoTest!
+
+The applications displays a list of medical professionals with specific informations. Besides, their addresses are displayed on 
+a static Google Map centered on Paris. More documentation about the GoogleMaps API can be found here:
+https://developers.google.com/maps/documentation/staticmaps/
+
+General configuration
+=====================
+* Ruby version: 1.9.3
+* Rails version: 4.1.4
+* Bootstrap 3
+
+Run
+	$ bundle install
+to install added gems.
+
+Database
+========
+There is only one model in the database: the User model. Attributes are annotated in the model file. This model implements the 
+professional doctors. We used the "rails generate scaffold" command line to create the model.
+
+To initialize the database, please run:
+	$ bundle exec rake db:create
+	$ bundle exec rake db:migrate
+then run:
+	$ bundle exec rake db:populate
+to populate the database with fake users.
+
+Remark: Fake addresses are taken from http://www.timeout.com/paris/en/bars-pubs/the-best-late-night-bars-in-paris
+
+Controllers
+===========
+There are three controllers: application, users and welcome
+The root is redirecting to users#index and displays the list of all registered users.
+The welcome controller was just here to test that the application initially runs and that Bootstrap works
+
+Deployment instructions
+=======================
+N/A
