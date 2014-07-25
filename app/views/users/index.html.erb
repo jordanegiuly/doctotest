@@ -1,4 +1,7 @@
 <div class="col-lg-12">
+	
+	<p id="notice"><%= notice %></p>
+	
 	<h1 class="page-header">Welcome to DoctoTest!</h1>
 	
 	<p class="lead">
@@ -9,9 +12,11 @@
 <div class="col-lg-5">
 	<ul class="list-group">
 		<% @users.each do |user| %>
-			<li class="list-group-item">
+			<li class="list-group-item" id="user_<%= user.id %>">
 	    		<span class="badge"><%= user.id %></span>
-	    		<h4 style="margin: 0;"><%= user.first_name %> <%= user.last_name %></h4>
+	    		<button style=" background:none; border:none; padding: 0;" id="button_<%= user.id %>" class="toggle_marker">
+	    			<h3 style="margin: 0;"><%= user.first_name %> <%= user.last_name %></h3>
+	    		</button>
 	    		<div>
 	    			<%= user.specialty %>
 	    			<br />
@@ -23,6 +28,106 @@
 </div>
 
 <div class="col-lg-7">
-	<img src="http://maps.googleapis.com/maps/api/staticmap?size=600x300&maptype=roadmap<%= @google_map_addresses %>", 
-		 alt="Google Maps" />
+	<div id="map-canvas" style="height: 500px;"></div>
 </div>
+
+
+<script>
+var map;
+var markers = {};
+var addresses = {};
+
+$(function() {
+	initialize();
+});
+
+function initialize() {
+	addAddresses();
+	
+	$.get("https://maps.googleapis.com/maps/api/geocode/json?address=Paris,+FR", function( data ) {
+		var latlg = data['results'][0]['geometry']['location'];
+		var mapOptions = {
+			zoom: 12,
+			center: new google.maps.LatLng(latlg['lat'], latlg['lng'])
+		};
+		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+		Addmarker(0);
+	});
+}
+
+// translates ruby data into JS data
+function addAddresses() {
+	<% @users.each do |user| %>
+		var address = "<%= user.address_to_url %>";
+		var user_id = "<%= user.id %>";
+		addresses[user_id] = address;
+	<% end %>
+}
+
+// recursive function to add all markers to the map
+function Addmarker(i){
+	if (i >= Object.keys(addresses).length) {
+		return;
+	}
+	user_id = Object.keys(addresses)[i];
+	address = addresses[user_id];
+	
+	$.get("https://maps.googleapis.com/maps/api/geocode/json?address="+address, function( data ) {
+		var latlg = data['results'][0]['geometry']['location'];
+		var marker = new google.maps.Marker({
+	    	position: new google.maps.LatLng(latlg['lat'], latlg['lng']),
+	      	map: map,
+	      	animation: google.maps.Animation.DROP
+		});
+		markers[user_id] = marker;
+		google.maps.event.addListener(marker, 'click', function() {
+			user_id = findUserIdByMarker(marker);
+			toggleBounceAndColor(user_id);
+		});
+	}).always(function() {
+		// loop here
+		i++;
+		Addmarker(i);
+	});
+}
+
+// This function returns the corresponding user_id for a given marker
+function findUserIdByMarker(marker) {
+	for (var key in markers) {
+		if (markers[key] == marker) {
+			return key;
+		}
+	}
+	return Object.keys(markers)[0];
+}
+
+// This function is called when clicking on a marker
+// It colors the corresponding professionnal in blue
+function toggleBounceAndColor(user_id) {
+	marker = markers[user_id];
+	
+	for (var key in markers) {
+		markers[key].setAnimation(null);
+		$("#user_" + key).css("background-color", "white"); 
+	}
+	
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+	$("#user_" + user_id).css("background-color", "#77bae7");
+}
+
+// when clicking on a name, it toggles the corresponding marker to bouncing.
+$(".toggle_marker").click(function() {
+	user_id = this.id.replace(/button_/, '');
+	
+	for (var key in markers) {
+		markers[key].setAnimation(null);
+		$("#user_" + key).css("background-color", "white"); 
+	}
+	
+	marker = markers[user_id];
+	marker.setAnimation(google.maps.Animation.BOUNCE);
+});
+
+
+</script>
+  

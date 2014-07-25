@@ -1,41 +1,60 @@
-<%= form_for(@user) do |f| %>
+<%= form_for(@user, html: {class: "form-horizontal"}) do |f| %>
   <% if @user.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-
-      <ul>
-      <% @user.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+    
+    <div class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+      	  <% @user.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+      	  <% end %>
+      	</ul>
+      </div>
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :last_name %><br>
-    <%= f.text_field :last_name %>
+  <div class="form-group">
+    <%= f.label :last_name, class:"col-sm-4 control-label" %>
+    <div class="col-sm-8">
+    	<%= f.text_field :last_name, class: "form-control" %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :first_name %><br>
-    <%= f.text_field :first_name %>
+  
+  <div class="form-group">
+    <%= f.label :first_name, class:"col-sm-4 control-label" %>
+    <div class="col-sm-8">
+      <%= f.text_field :first_name, class: "form-control" %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :address %><br>
-    <%= f.text_field :address %>
+  <div class="form-group">
+    <%= f.label :address, class:"col-sm-4 control-label" %>
+    <div class="col-sm-8">
+      <%= f.text_field :address, class: "form-control" %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :postal_code %><br>
-    <%= f.number_field :postal_code %>
+  <div class="form-group">
+    <%= f.label :postal_code, class:"col-sm-4 control-label" %>
+    <div class="col-sm-8">
+      <%= f.number_field :postal_code, class: "form-control" %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :city %><br>
-    <%= f.text_field :city %>
+  <div class="form-group">
+    <%= f.label :city, class:"col-sm-4 control-label" %>
+    <div class="col-sm-8">
+      <%= f.text_field :city, class: "form-control" %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :specialty %><br>
-    <%= f.number_field :specialty %>
+  <div class="form-group">
+    <%= f.label :specialty, class:"col-sm-4 control-label" %>
+    <div class="col-sm-8">
+      <%= f.select(:specialty, User.specialties.keys, {}, { :class => "form-control" }) %>
+    </div>
   </div>
-  <div class="actions">
-    <%= f.submit %>
+  <div class="form-group">
+  	<div class="col-sm-offset-4 col-sm-8">
+      <%= f.submit "Sign up!", class: "btn btn-success btn-lg" %>
+    </div>
   </div>
 <% end %>
